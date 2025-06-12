@@ -2,19 +2,19 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"time"
 )
 
-func MakeMessage(workerType string) string {
-	return fmt.Sprintf("Hi! from %s...", workerType)
-}
-
 func main() {
-	workerType, _ := os.LookupEnv("WORKER_TYPE")
-	waitFor := 15 * time.Second
+	config := LoadConfig()
+	sourceQueueConfig, dstQueueConfig := GetQueueConfigs(config.SourceQueueName)
+	if sourceQueueConfig == nil {
+		errorMsg := fmt.Sprintf("Unable to find a config for %s", config.SourceQueueName)
+		panic(errorMsg)
+	}
+
 	for {
-		fmt.Println(MakeMessage(workerType))
-		time.Sleep(waitFor)
+		fmt.Println(sourceQueueConfig, dstQueueConfig)
+		time.Sleep(15 * time.Second)
 	}
 }
