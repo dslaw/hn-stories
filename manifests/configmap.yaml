@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config
+data:
+  database_name: hn-stories
+  database_user: app_user
+  database_password: app_user
+  database_url: postgres://app_user:app_user@database.default.svc.cluster.local/hn-stories?sslmode=disable
