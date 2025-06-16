@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: broker-pv
+spec:
+  capacity:
+    storage: 10Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/broker-data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: broker-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: broker
+  template:
+    metadata:
+      labels:
+        app: broker
+    spec:
+      containers:
+        - name: broker
+          image: redis:8.0.2-alpine
+          args: 
+            - --save 60 1
+            - --loglevel warning
+            - --requirepass app_user
+          env:
+            - name: QUEUE_POLL_TIMEOUT
+              configMapKeyRef:
+                name: config
+                key: queue_poll_timeout
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - mountPath: /data
+              name: brokerdata
+      volumes:
+        - name: brokerdata
+          persistentVolumeClaim:
+            claimName: broker-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: broker
+spec:
+  ports:
+    - port: 6379
+  selector:
+    app: broker

@@ -37,9 +37,10 @@ func LoadIntEnv(key string) int {
 }
 
 type Config struct {
-	DatabaseURL     string
-	BrokerURL       string
-	SourceQueueName string
+	DatabaseURL      string
+	BrokerURL        string
+	SourceQueueName  string
+	QueuePollTimeout time.Duration
 }
 
 func LoadConfig() *Config {
@@ -47,5 +48,6 @@ func LoadConfig() *Config {
 	config.DatabaseURL = LoadEnv("DATABASE_URL")
 	config.BrokerURL = LoadEnv("BROKER_URL")
 	config.SourceQueueName = LoadEnv("SOURCE_QUEUE_NAME")
+	config.QueuePollTimeout = LoadDurationEnv("QUEUE_POLL_TIMEOUT")
 	return config
 }

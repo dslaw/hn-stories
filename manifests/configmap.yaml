@@ -7,3 +7,5 @@ data:
   database_user: app_user
   database_password: app_user
   database_url: postgres://app_user:app_user@database.default.svc.cluster.local/hn-stories?sslmode=disable
+  broker_url: redis://default:app_user@broker.default.svc.cluster.local/0
+  queue_poll_timeout: 0s  # Indefinite.
