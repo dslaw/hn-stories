@@ -1,11 +1,12 @@
 package main
 
 import (
-	"context"
+	// "context"
 	"fmt"
+	"net/http"
 	"time"
-
-	"github.com/jackc/pgx/v5"
+	// "github.com/jackc/pgx/v5"
+	// "github.com/redis/go-redis/v9"
 )
 
 func main() {
@@ -16,21 +17,32 @@ func main() {
 		panic(errorMsg)
 	}
 
-	conn, err := pgx.Connect(context.Background(), config.DatabaseURL)
-	if err != nil {
-		panic(err)
-	}
-	defer conn.Close(context.Background())
+	// conn, err := pgx.Connect(context.Background(), config.DatabaseURL)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer conn.Close(context.Background())
 
-	repo := NewRepo(conn)
+	// repo := NewRepo(conn)
+
+	// opts, err := redis.ParseURL(config.BrokerURL)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// redisClient := redis.NewClient(opts)
+	// defer redisClient.Close()
+
+	httpClient := &http.Client{Timeout: config.HNClientHTTPTimeout}
+	client := NewHNClient(
+		httpClient,
+		config.HNClientBaseURL,
+		config.HNClientAPIVersion,
+		config.HNClientBackoff,
+		config.HNClientMaxAttempts,
+	)
+
 	for {
-		var count int32
-		err := conn.QueryRow(context.Background(), "select count(*) from stories").Scan(&count)
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Println(count)
+		fmt.Println(client.FetchNewStories())
 		time.Sleep(15 * time.Second)
 	}
 }

@@ -9,3 +9,8 @@ data:
   database_url: postgres://app_user:app_user@database.default.svc.cluster.local/hn-stories?sslmode=disable
   broker_url: redis://default:app_user@broker.default.svc.cluster.local/0
   queue_poll_timeout: 0s  # Indefinite.
+  hn_client_base_url: https://hacker-news.firebaseio.com
+  hn_client_api_version: v0
+  hn_client_backoff: 10s
+  hn_client_max_attempts: "5"
+  hn_client_http_timeout: 30s

@@ -37,10 +37,15 @@ func LoadIntEnv(key string) int {
 }
 
 type Config struct {
-	DatabaseURL      string
-	BrokerURL        string
-	SourceQueueName  string
-	QueuePollTimeout time.Duration
+	DatabaseURL         string
+	BrokerURL           string
+	SourceQueueName     string
+	QueuePollTimeout    time.Duration
+	HNClientBaseURL     string
+	HNClientAPIVersion  string
+	HNClientBackoff     time.Duration
+	HNClientMaxAttempts int
+	HNClientHTTPTimeout time.Duration
 }
 
 func LoadConfig() *Config {
@@ -49,5 +54,10 @@ func LoadConfig() *Config {
 	config.BrokerURL = LoadEnv("BROKER_URL")
 	config.SourceQueueName = LoadEnv("SOURCE_QUEUE_NAME")
 	config.QueuePollTimeout = LoadDurationEnv("QUEUE_POLL_TIMEOUT")
+	config.HNClientBaseURL = LoadEnv("HN_CLIENT_BASE_URL")
+	config.HNClientAPIVersion = LoadEnv("HN_CLIENT_API_VERSION")
+	config.HNClientBackoff = LoadDurationEnv("HN_CLIENT_BACKOFF")
+	config.HNClientMaxAttempts = LoadIntEnv("HN_CLIENT_MAX_ATTEMPTS")
+	config.HNClientHTTPTimeout = LoadDurationEnv("HN_CLIENT_HTTP_TIMEOUT")
 	return config
 }
