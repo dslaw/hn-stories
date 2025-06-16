@@ -42,11 +42,6 @@ spec:
             - --save 60 1
             - --loglevel warning
             - --requirepass app_user
-          env:
-            - name: QUEUE_POLL_TIMEOUT
-              configMapKeyRef:
-                name: config
-                key: queue_poll_timeout
           ports:
             - containerPort: 6379
           volumeMounts:

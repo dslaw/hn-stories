@@ -41,6 +41,11 @@ var queueConfigs = [...]QueueConfig{
 	{Name: "6h", ProcessAfter: 6 * time.Hour, GracePeriod: DefaultGracePeriod},
 }
 
+// TODO: This doesn't support the case where we want to produce to "new", but
+//
+//	have no source queue.
+//
+// TODO: Should probably return a bool or error for misconfiguration.
 // GetQueueConfigs returns the queue config for the given queue name, as well as
 // the config for the next queue, if there is one, otherwise nil. If no queue
 // config exists for the given queue name, nil is returned for both values.
