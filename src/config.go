@@ -55,6 +55,7 @@ func LoadConfig() *Config {
 	config.DatabaseURL = LoadEnv("DATABASE_URL")
 	config.BrokerURL = LoadEnv("BROKER_URL")
 	config.SourceQueueName = LoadEnv("SOURCE_QUEUE_NAME")
+	config.DstQueueName = LoadEnv("DST_QUEUE_NAME")
 	config.HNClientBaseURL = LoadEnv("HN_CLIENT_BASE_URL")
 	config.HNClientAPIVersion = LoadEnv("HN_CLIENT_API_VERSION")
 	config.HNClientBackoff = LoadDurationEnv("HN_CLIENT_BACKOFF")
