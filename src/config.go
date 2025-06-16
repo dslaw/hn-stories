@@ -40,6 +40,7 @@ type Config struct {
 	DatabaseURL          string
 	BrokerURL            string
 	SourceQueueName      string
+	DstQueueName         string
 	HNClientBaseURL      string
 	HNClientAPIVersion   string
 	HNClientBackoff      time.Duration

@@ -12,7 +12,7 @@ import (
 
 const (
 	QueueKeyPrefix     = "ingestion-queue"
-	DefaultGracePeriod = time.Minute
+	DefaultGracePeriod = 1 * time.Minute
 	NewQueueName       = "new"
 )
 
@@ -32,38 +32,31 @@ func (c QueueConfig) MakeKey() string {
 	return fmt.Sprintf("%s:%s", QueueKeyPrefix, c.Name)
 }
 
-var queueConfigs = [...]QueueConfig{
-	{Name: NewQueueName, ProcessAfter: 0 * time.Second, GracePeriod: DefaultGracePeriod},
-	{Name: "15m", ProcessAfter: 15 * time.Minute, GracePeriod: DefaultGracePeriod},
-	{Name: "30m", ProcessAfter: 30 * time.Minute, GracePeriod: DefaultGracePeriod},
-	{Name: "1h", ProcessAfter: time.Hour, GracePeriod: DefaultGracePeriod},
-	{Name: "3h", ProcessAfter: 3 * time.Hour, GracePeriod: DefaultGracePeriod},
-	{Name: "6h", ProcessAfter: 6 * time.Hour, GracePeriod: DefaultGracePeriod},
+// MakeNewQueueConfig makes a QueueConfig for the "new" queue.
+func MakeNewQueueConfig() QueueConfig {
+	return QueueConfig{
+		Name:         NewQueueName,
+		ProcessAfter: 0 * time.Second,
+		GracePeriod:  DefaultGracePeriod,
+	}
 }
 
-// TODO: This doesn't support the case where we want to produce to "new", but
-//
-//	have no source queue.
-//
-// TODO: Should probably return a bool or error for misconfiguration.
-// GetQueueConfigs returns the queue config for the given queue name, as well as
-// the config for the next queue, if there is one, otherwise nil. If no queue
-// config exists for the given queue name, nil is returned for both values.
-func GetQueueConfigs(name string) (*QueueConfig, *QueueConfig) {
-	var nextQueueConfig *QueueConfig
+// MakeQueueConfig makes a QueueConfig based on the queue's name.
+func MakeQueueConfig(name string) (QueueConfig, error) {
+	var (
+		err          error
+		processAfter = 0 * time.Second
+	)
 
-	for idx, queueConfig := range queueConfigs {
-		if queueConfig.Name == name {
-			nextIdx := idx + 1
-			if nextIdx < len(queueConfigs) {
-				nextQueueConfig = &queueConfigs[nextIdx]
-			}
-
-			return &queueConfig, nextQueueConfig
-		}
+	if name != NewQueueName {
+		processAfter, err = time.ParseDuration(name)
 	}
 
-	return nil, nil
+	return QueueConfig{
+		Name:         name,
+		ProcessAfter: processAfter,
+		GracePeriod:  DefaultGracePeriod,
+	}, err
 }
 
 // Message is a message for communicating that a Hacker News story be processed.

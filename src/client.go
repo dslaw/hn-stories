@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -12,8 +13,9 @@ import (
 )
 
 const (
-	ResourceNameNewStories = "newstories"
-	ResourceNameItem       = "item"
+	ResourceNameNewStories       = "newstories"
+	ResourceNameItem             = "item"
+	MaxBackoffJitterMilliseconds = 250
 )
 
 var ErrMaxRetriesReached = errors.New("Maximum retries reached")
@@ -77,7 +79,11 @@ func (c *HNClient) get(url string) ([]byte, error) {
 	)
 
 	for attempt := 0; attempt < c.MaxAttempts; attempt++ {
-		time.Sleep(time.Duration(attempt) * c.Backoff)
+		if attempt > 0 {
+			jitter := time.Duration(rand.Int63n(MaxBackoffJitterMilliseconds)) * time.Millisecond
+			backoff := time.Duration(attempt)*c.Backoff + jitter
+			time.Sleep(backoff)
+		}
 
 		rsp, err = c.client.Get(url)
 		if err != nil {
