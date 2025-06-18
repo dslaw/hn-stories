@@ -153,7 +153,7 @@ func TestMessageConsumerFetchWhenProcessingWindowPassedEarlyReturn(t *testing.T)
 	consumer := NewMessageConsumer(client, src, repo)
 	actualStoryID, _, err := consumer.Fetch(context.Background())
 
-	assert.Nil(t, err)
+	assert.ErrorIs(t, err, ErrMessageExpired)
 	assert.Equal(t, expectedStoryID, actualStoryID)
 
 	httpClient.AssertNotCalled(t, "Get")

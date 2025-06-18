@@ -3,11 +3,15 @@ package main
 import (
 	"context"
 	"errors"
-	"log/slog"
+	"fmt"
 	"time"
 )
 
-var ErrTimeoutExceeded = errors.New("Timeout exceeded")
+var (
+	ErrTimeoutExceeded = errors.New("Timeout exceeded")
+	ErrMessageExpired  = errors.New("Message expired")
+	ErrFetching        = errors.New("Unable to fetch")
+)
 
 // Repoer provides a method to store Hacker News stories and comments.
 type Repoer interface {
@@ -54,14 +58,14 @@ func (c *MessageConsumer) Fetch(ctx context.Context) (storyID int64, createdAt t
 
 	processingWindowPassed := WaitUntil(time.Now().UTC(), processingWindowStart, processingWindowEnd)
 	if processingWindowPassed {
-		slog.Error("Message expired", "story_id", msg.StoryID, "expired_at", processingWindowEnd)
+		err = fmt.Errorf("%w: expired at %s", ErrMessageExpired, processingWindowEnd)
 		return
 	}
 
 	story := HNStory{}
 	err = c.client.FetchItem(msg.StoryID, &story)
 	if err != nil {
-		slog.Error("Unable to fetch story", "story_id", msg.StoryID, "error", err)
+		err = fmt.Errorf("%w story: %w", ErrFetching, err)
 		return
 	}
 
@@ -72,6 +76,7 @@ func (c *MessageConsumer) Fetch(ctx context.Context) (storyID int64, createdAt t
 		comment := HNComment{}
 		err = c.client.FetchItem(commentID, &comment)
 		if err != nil {
+			err = fmt.Errorf("%w comment: %w", ErrFetching, err)
 			return
 		}
 
