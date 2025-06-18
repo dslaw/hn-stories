@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"errors"
+	"log/slog"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -10,6 +13,7 @@ import (
 const writeStoryStmt = `
 insert into stories (story_id, api_version, queue_name, fetched_at, raw_document)
 values ($1, $2, $3, $4, $5)
+on conflict do nothing
 returning id
 `
 
@@ -53,6 +57,11 @@ func (r *Repo) WriteStory(ctx context.Context, story StoryModel) error {
 	var id int32
 	row := tx.QueryRow(ctx, writeStoryStmt, story.StoryID, story.APIVersion, story.QueueName, story.FetchedAt, story.RawDocument)
 	err = row.Scan(&id)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		slog.Error("Skipping insert of duplicate story", "story_id", story.StoryID, "error", err)
+		return nil
+	}
 	if err != nil {
 		return err
 	}
