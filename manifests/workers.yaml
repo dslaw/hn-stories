@@ -1,0 +1,271 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-new-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker-new
+  template:
+    metadata:
+      labels:
+        app: worker-new
+    spec:
+      containers:
+      - name: worker-new
+        image: hn-stories-worker:dev
+        env:
+        - name: SOURCE_QUEUE_NAME
+          value: ""
+        - name: DST_QUEUE_NAME
+          value: "new"
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: database_url
+        - name: BROKER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: broker_url
+        - name: HN_CLIENT_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_base_url
+        - name: HN_CLIENT_API_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_api_version
+        - name: HN_CLIENT_BACKOFF
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_backoff
+        - name: HN_CLIENT_MAX_ATTEMPTS
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_max_attempts
+        - name: HN_CLIENT_HTTP_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_http_timeout
+        - name: CONSUMER_POLL_INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: consumer_poll_interval
+        - name: CONSUMER_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: consumer_timeout
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-0m-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker-0m
+  template:
+    metadata:
+      labels:
+        app: worker-0m
+    spec:
+      containers:
+      - name: worker-0m
+        image: hn-stories-worker:dev
+        env:
+        - name: SOURCE_QUEUE_NAME
+          value: "new"
+        - name: DST_QUEUE_NAME
+          value: "15m"
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: database_url
+        - name: BROKER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: broker_url
+        - name: HN_CLIENT_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_base_url
+        - name: HN_CLIENT_API_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_api_version
+        - name: HN_CLIENT_BACKOFF
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_backoff
+        - name: HN_CLIENT_MAX_ATTEMPTS
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_max_attempts
+        - name: HN_CLIENT_HTTP_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_http_timeout
+        - name: CONSUMER_POLL_INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: consumer_poll_interval
+        - name: CONSUMER_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: consumer_timeout
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-15m-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker-15m
+  template:
+    metadata:
+      labels:
+        app: worker-15m
+    spec:
+      containers:
+      - name: worker-15m
+        image: hn-stories-worker:dev
+        env:
+        - name: SOURCE_QUEUE_NAME
+          value: "15m"
+        - name: DST_QUEUE_NAME
+          value: "30m"
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: database_url
+        - name: BROKER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: broker_url
+        - name: HN_CLIENT_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_base_url
+        - name: HN_CLIENT_API_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_api_version
+        - name: HN_CLIENT_BACKOFF
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_backoff
+        - name: HN_CLIENT_MAX_ATTEMPTS
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_max_attempts
+        - name: HN_CLIENT_HTTP_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_http_timeout
+        - name: CONSUMER_POLL_INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: consumer_poll_interval
+        - name: CONSUMER_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: consumer_timeout
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-30m-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker-30m
+  template:
+    metadata:
+      labels:
+        app: worker-30m
+    spec:
+      containers:
+      - name: worker-30m
+        image: hn-stories-worker:dev
+        env:
+        - name: SOURCE_QUEUE_NAME
+          value: "30m"
+        - name: DST_QUEUE_NAME
+          value: "1h"
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: database_url
+        - name: BROKER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: broker_url
+        - name: HN_CLIENT_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_base_url
+        - name: HN_CLIENT_API_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_api_version
+        - name: HN_CLIENT_BACKOFF
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_backoff
+        - name: HN_CLIENT_MAX_ATTEMPTS
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_max_attempts
+        - name: HN_CLIENT_HTTP_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: hn_client_http_timeout
+        - name: CONSUMER_POLL_INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: consumer_poll_interval
+        - name: CONSUMER_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: config
+              key: consumer_timeout
