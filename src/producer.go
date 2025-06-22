@@ -19,12 +19,15 @@ func NewMessageProducer(dst Enqueuer) *MessageProducer {
 	return &MessageProducer{dst: dst}
 }
 
-func (p *MessageProducer) MakeMessage(storyID int64, createdAt time.Time) Message {
-	processAt := createdAt.Add(p.dst.ProcessAfter())
+func (p *MessageProducer) MakeMessage(storyID int64, createdAt *time.Time) Message {
+	processAt := time.Now().UTC()
+	if createdAt != nil {
+		processAt = createdAt.Add(p.dst.ProcessAfter())
+	}
 	return Message{StoryID: storyID, CreatedAt: createdAt, ProcessAt: processAt}
 }
 
-func (p *MessageProducer) SendMessage(ctx context.Context, storyID int64, createdAt time.Time) error {
+func (p *MessageProducer) SendMessage(ctx context.Context, storyID int64, createdAt *time.Time) error {
 	msg := p.MakeMessage(storyID, createdAt)
 	return p.dst.Enqueue(ctx, msg)
 }
@@ -32,6 +35,6 @@ func (p *MessageProducer) SendMessage(ctx context.Context, storyID int64, create
 // NopProducer does not produce messages.
 type NopProducer struct{}
 
-func (p *NopProducer) SendMessage(_ context.Context, _ int64, _ time.Time) error {
+func (p *NopProducer) SendMessage(_ context.Context, _ int64, _ *time.Time) error {
 	return nil
 }

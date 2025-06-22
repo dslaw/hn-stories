@@ -45,7 +45,7 @@ func NewMessageConsumer(client *HNClient, src *PriorityQueue, repo Repoer) *Mess
 	return &MessageConsumer{client: client, src: src, repo: repo}
 }
 
-func (c *MessageConsumer) Fetch(ctx context.Context) (storyID int64, createdAt time.Time, err error) {
+func (c *MessageConsumer) Fetch(ctx context.Context) (storyID int64, createdAt *time.Time, err error) {
 	msg, err := c.src.Dequeue(ctx)
 	if err != nil {
 		return
@@ -69,7 +69,8 @@ func (c *MessageConsumer) Fetch(ctx context.Context) (storyID int64, createdAt t
 		return
 	}
 
-	createdAt = time.Unix(story.Time, 0).UTC()
+	storyCreatedAt := time.Unix(story.Time, 0).UTC()
+	createdAt = &storyCreatedAt
 
 	comments := make([]HNComment, len(story.Kids))
 	for _, commentID := range story.Kids {
@@ -168,7 +169,7 @@ func (c *LatestStoryConsumer) PollForNewStories() (ids []int64, err error) {
 // Hacker News API as necessary. If no new story ids are available, it will
 // block until new story ids become available or the configured deadline is
 // reached.
-func (c *LatestStoryConsumer) Fetch(_ context.Context) (storyID int64, createdAt time.Time, err error) {
+func (c *LatestStoryConsumer) Fetch(_ context.Context) (storyID int64, _ *time.Time, err error) {
 	// Fill up the buffer of new story ids, using the last remaining buffered
 	// story id to filter out the API's returned new stories, if available.
 	if len(c.buffer) <= 1 {
@@ -183,7 +184,5 @@ func (c *LatestStoryConsumer) Fetch(_ context.Context) (storyID int64, createdAt
 
 	n := len(c.buffer)
 	c.buffer, storyID = c.buffer[:n-1], c.buffer[n-1]
-
-	createdAt = time.Now().UTC()
 	return
 }

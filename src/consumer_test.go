@@ -92,7 +92,7 @@ func TestMessageConsumerFetch(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, expectedStoryID, actualStoryID)
-	assert.Equal(t, expectedCreatedAt, actualCreatedAt)
+	assert.Equal(t, expectedCreatedAt, *actualCreatedAt)
 
 	httpClient.AssertCalled(t, "Get", "http://localhost/v0/item/1.json")
 	repo.AssertNumberOfCalls(t, "WriteStory", 1)

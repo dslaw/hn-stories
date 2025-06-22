@@ -10,11 +10,11 @@ import (
 const MaxBackoffMillisecond = 500
 
 type Consumer interface {
-	Fetch(context.Context) (int64, time.Time, error)
+	Fetch(context.Context) (int64, *time.Time, error)
 }
 
 type Producer interface {
-	SendMessage(context.Context, int64, time.Time) error
+	SendMessage(context.Context, int64, *time.Time) error
 }
 
 func Run(ctx context.Context, consumer Consumer, producer Producer) {

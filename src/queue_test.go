@@ -53,9 +53,10 @@ func TestPriorityQueueEnqueue(t *testing.T) {
 	pq := NewPriorityQueue(broker, config, 0*time.Second)
 
 	ctx := context.Background()
+	createdAt := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	msg := Message{
 		StoryID:   1,
-		CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		CreatedAt: &createdAt,
 		ProcessAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 	err := pq.Enqueue(ctx, msg)
@@ -79,9 +80,10 @@ func TestPriorityQueueEnqueueWhenErrorReturnsError(t *testing.T) {
 	pq := NewPriorityQueue(broker, config, 0*time.Second)
 
 	ctx := context.Background()
+	createdAt := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	msg := Message{
 		StoryID:   1,
-		CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		CreatedAt: &createdAt,
 		ProcessAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 	err := pq.Enqueue(ctx, msg)
@@ -102,9 +104,11 @@ func TestPriorityQueueDequeue(t *testing.T) {
 			Score:  float64(1577836800),
 		},
 	}
+
+	createdAt := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	expected := Message{
 		StoryID:   1,
-		CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		CreatedAt: &createdAt,
 		ProcessAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 

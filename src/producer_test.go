@@ -33,13 +33,29 @@ func TestMessageProducerMakeMessage(t *testing.T) {
 	createdAt := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	expected := Message{
 		StoryID:   storyID,
-		CreatedAt: createdAt,
+		CreatedAt: &createdAt,
 		ProcessAt: time.Date(2020, 1, 1, 1, 0, 0, 0, time.UTC),
 	}
 
-	actual := producer.MakeMessage(storyID, createdAt)
+	actual := producer.MakeMessage(storyID, &createdAt)
 
 	assert.Equal(t, expected, actual)
+}
+
+func TestMessageProducerMakeMessageWhenCreatedAtIsNil(t *testing.T) {
+	config := QueueConfig{ProcessAfter: time.Hour}
+	dst := &PriorityQueue{config: config}
+	producer := NewMessageProducer(dst)
+
+	storyID := int64(1)
+
+	calledAt := time.Now().UTC()
+	actual := producer.MakeMessage(storyID, nil)
+
+	assert.Equal(t, storyID, actual.StoryID)
+	assert.Nil(t, actual.CreatedAt)
+	assert.True(t, actual.ProcessAt.Before(time.Now().UTC()))
+	assert.True(t, actual.ProcessAt.After(calledAt))
 }
 
 func TestMessageProducerSendMessage(t *testing.T) {
@@ -53,12 +69,12 @@ func TestMessageProducerSendMessage(t *testing.T) {
 	createdAt := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	expectedMsg := Message{
 		StoryID:   storyID,
-		CreatedAt: createdAt,
+		CreatedAt: &createdAt,
 		ProcessAt: time.Date(2020, 1, 1, 1, 0, 0, 0, time.UTC),
 	}
 
 	ctx := context.Background()
-	err := producer.SendMessage(ctx, storyID, createdAt)
+	err := producer.SendMessage(ctx, storyID, &createdAt)
 
 	assert.Nil(t, err)
 	dst.AssertCalled(t, "Enqueue", ctx, expectedMsg)
@@ -75,12 +91,12 @@ func TestMessageProducerSendMessageWhenErrorEnqueuingReturnsError(t *testing.T) 
 	createdAt := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	expectedMsg := Message{
 		StoryID:   storyID,
-		CreatedAt: createdAt,
+		CreatedAt: &createdAt,
 		ProcessAt: time.Date(2020, 1, 1, 1, 0, 0, 0, time.UTC),
 	}
 
 	ctx := context.Background()
-	err := producer.SendMessage(ctx, storyID, createdAt)
+	err := producer.SendMessage(ctx, storyID, &createdAt)
 
 	assert.NotNil(t, err)
 	dst.AssertCalled(t, "Enqueue", ctx, expectedMsg)

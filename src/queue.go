@@ -63,8 +63,9 @@ func MakeQueueConfig(name string) (QueueConfig, error) {
 type Message struct {
 	// StoryID is the (external) id of the Hacker News story.
 	StoryID int64 `json:"story_id"`
-	// CreatedAt gives the time the story was created at, or the best guess.
-	CreatedAt time.Time `json:"created_at"`
+	// CreatedAt gives the time the story was created at, or nil if it is
+	// unknown. The latter case occurs when fetching new story ids.
+	CreatedAt *time.Time `json:"created_at"`
 	// ProcessAt gives the time at which the message should be processed.
 	ProcessAt time.Time `json:"-"`
 }
