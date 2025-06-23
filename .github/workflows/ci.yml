@@ -3,8 +3,12 @@ name: ci
 on:
   push:
 
+env:
+  image_name_base: hn-stories-worker
+  image_tag: ci
+
 jobs:
-  test:
+  test-and-build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -25,3 +29,10 @@ jobs:
 
     - name: Test
       run: go test ./...
+
+    - name: Build image
+      run: |
+        branch=$(git rev-parse --abbrev-ref HEAD)
+        commit=$(git rev-parse --short --verify ${branch})
+        image_name=${image_name_base}-${branch}
+        docker build . --tag=${image_name}:${{ env.image_tag }} --tag=${image_name}:${commit}
